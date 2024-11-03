@@ -153,3 +153,25 @@ func pathFromHome(relativePath string) string {
 func saveExample(path string, data string) error {
 	return os.WriteFile(path, []byte(data), 0700)
 }
+
+// SaveConfig saves the config back to yaml file
+func (loader *YamlLoader) SaveConfig(filename string) error {
+	configFolder := pathFromHome(loader.path)
+	l, exists := loader.configFiles[filename]
+	if !exists {
+		return errors.New("config file not registered")
+	}
+
+	configFile := path.Join(configFolder, filename)
+	return saveYaml(configFile, l.config)
+}
+
+// saveYaml saves config to yaml file
+func saveYaml(filepath string, config interface{}) error {
+	content, err := yaml.Marshal(config)
+	if err != nil {
+		return err
+	}
+	
+	return os.WriteFile(filepath, content, 0600)
+}
